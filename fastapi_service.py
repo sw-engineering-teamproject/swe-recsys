@@ -36,3 +36,8 @@ async def search_faiss_cpu_db(query, db, k=5):
             break
     return result
 
+async def add_faiss_cpu_db(query, assignee_id, fixer_id, db):
+    page_content = query + " " + assignee_id
+    metadata = {'assignee_id': assignee_id, 'fixer_id': fixer_id}
+    document = Document(page_content, metadata)
+    db.add_documents([document])
