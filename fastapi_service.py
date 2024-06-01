@@ -1,3 +1,9 @@
+import logging
+
+# 로깅 설정
+logger = logging.getLogger("uvicorn")
+logging.basicConfig(level=logging.INFO)
+
 class Document:
     def __init__(self, page_content, metadata):
         self.page_content = page_content
@@ -21,8 +27,11 @@ async def search_faiss_cpu_db(query, db, k=5):
     )
     embedding_vector = await embeddings.aembed_query(query)
     docs_and_scores = await db.asimilarity_search_with_score(query, k=k)
+    user_dict = {}
     searched = []
     for doc, score in docs_and_scores:
+        user_dict[doc.metadata['assignee_id']] = doc.page_content
+        user_dict[doc.metadata['fixer_id']] = doc.page_content
         searched.append(doc.metadata['assignee_id'])
         searched.append(doc.metadata['fixer_id'])
 
@@ -34,6 +43,9 @@ async def search_faiss_cpu_db(query, db, k=5):
             cnt += 1
         if cnt == 3:
             break
+    logger.info("Search result for " + query)
+    for i in result:
+        logger.info(f"{i}: {user_dict[i]}")
     return result
 
 async def add_faiss_cpu_db(query, assignee_id, fixer_id, db):
