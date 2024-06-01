@@ -18,7 +18,9 @@ async def build_faiss_cpu_db():
         if idx == 0:
             continue
         page_content = row[0] + " " + row[1]
-        metadata = {'assignee_id': row[3], 'fixer_id': row[4]}
+        assignee_id = int(row[3]) + 30000
+        fixer_id = int(row[4]) + 30000
+        metadata = {'assignee_id': str(assignee_id), 'fixer_id': str(fixer_id) }
         Documents.append(Document(page_content, metadata))
 
     from langchain_text_splitters import CharacterTextSplitter
